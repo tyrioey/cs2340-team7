@@ -15,20 +15,18 @@ public class Territory implements Comparable<Territory>
 	Player occupiedByPlayer; 
 	boolean occupiable;
 	boolean homeBase;
-	int health; //only for homebases
 
 	public Territory(String name, int[] coords)
 	{
 	
-		this.name=name;
-		coordinates = coords;
-		resources = new ArrayList<Resource>();
-		isOccupied = false;
-		occupiedByUnit = new TreeMap<Integer,Unit>();
-		occupiedByPlayer = null;
-		occupiable = true;
-		homeBase = false;
-		health = 0;
+	this.name=name;
+	coordinates = coords;
+	resources = new ArrayList<Resource>();
+	isOccupied = false;
+    occupiedByUnit = new TreeMap<Integer,Unit>();
+	occupiedByPlayer = null;
+	occupiable = true;
+	homeBase = false;
 	}
 	public int compareTo(Territory other)
 	{
@@ -53,23 +51,15 @@ public class Territory implements Comparable<Territory>
 	public void makeNotOccupiable(){
 	    occupiable = false;
 	}  
+    public boolean hasAsteroid() {
+        return !occupiable;
+    }
 	//the "home base" of the player. New units will spawn adjacent to the home base and if it is "conquered", that player loses.
 	public void makeHomeBase(Player player){
 	    homeBase = true;
-	    makeNotOccupiable();
 	    occupiedByPlayer = player;
 	    player.setHomeBase(coordinates[0],coordinates[1]);
-	    health = 150;
-    }
-	public void takeDamage(int damage)
-	{
-		int dmg = damage-10;
-		if(dmg > 0)
-			health -=dmg;
-		System.out.println("Homebase only has "+health+" health left!");
-		if(health <= 0)
-			occupiedByPlayer.loses();
-	}
+    } 
 	public boolean isHomeBase()
 	{
 		return homeBase;
@@ -108,8 +98,19 @@ public class Territory implements Comparable<Territory>
 		else
 			System.out.println("There's something in the way!");
 		
-		
+		update();
 	}
+    
+    public void removeUnit(Unit failurer) {
+        if (occupiable) {
+            int id = failurer.getID();
+            occupiedByUnit.remove(id);
+            if (occupiedByUnit.size() == 0)
+                occupiedByPlayer = null;
+        } else
+            System.out.println("No units here.");
+    }
+    
 	public String getName(){
 		return name;
 	}
@@ -129,31 +130,37 @@ public class Territory implements Comparable<Territory>
 		return occupiedByPlayer;
 	}
 	
-
-	public void update(Unit unit)
+	//removes units that no longer occupy this space
+	//can probably implement much more elegantly with an iterator
+	public void update()
 	{
-    	if(!Arrays.equals(coordinates, unit.getTerritory().getCoords()))
-    	{
-    		occupiedByUnit.remove(unit.getID());
-    	}
-    	if(occupiedByUnit.size() == 0)
-    		isOccupied = false;
-
+		//if unit is dead
+//    	ArrayList<Integer> toBeRemoved = new ArrayList<Integer>();
+//    	for(int id: occupiedByUnit.keySet())
+//    	{
+//    		if(occupiedByUnit.get(id).getHealth() <= 0)
+//    		{
+//    			toBeRemoved.add(id);
+//    		}
+//    	}
+//    	for(int id: toBeRemoved)
+//    	{
+//    		occupiedByUnit.remove(id);
+//    	}
+//    	toBeRemoved = new ArrayList<Integer>();
+//		for(int id: occupiedByUnit.keySet())
+//		{
+//			if(!Arrays.equals(this.getCoords(), occupiedByUnit.get(id).getTerritory().getCoords()))
+//			{
+//				toBeRemoved.add(id);
+//			}
+//		}
+//		for(int a: toBeRemoved)
+//			occupiedByUnit.remove(a);
+//		
+//		if(occupiedByUnit.size() == 0)
+//			occupiedByPlayer = null;
 	}
-	public void removeDeadUnits()
-    {
-		ArrayList<Integer> toBeRemoved = new ArrayList<Integer>();
-    	for(int id : occupiedByUnit.keySet())
-    	{
-    		Unit unit = occupiedByUnit.get(id);
-    		if(unit.getHealth()<0)
-    			toBeRemoved.add(id);	
-    	}
-    	for(int id:toBeRemoved)
-    		occupiedByUnit.remove(id);
-    	if(occupiedByUnit.size() == 0)
-    		isOccupied = false;
-    }
 	public String toString()
 	{
 		return name;

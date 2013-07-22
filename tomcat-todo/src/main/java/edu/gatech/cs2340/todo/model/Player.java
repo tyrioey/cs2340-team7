@@ -27,23 +27,6 @@ public class Player implements Comparable<Player>
         occupiedTerritories= new TreeMap<String,Integer>();
         hasLost = false;
         homebase = new int[2];
-        color = determineColor(country);
-    }
-    private String determineColor(String task)
-    {
-    	if (country.equals("Polaris")) { return "purple";}
-    	else if (country.equals("Alpha-Centauri")) { return "green";}
-    	else if (country.equals("Char")) { return "red";} 
-    	else if (country.equals("Midichloria")) { return "blue";}
-    	else if (country.equals("Borg")) { return "gray";} 
-    	else if (country.equals("HAL Space Station")) { return "orange";}
-    	else
-    		return "pink";
-    	
-    }
-    public String getColor()
-    {
-    	return color;
     }
     public int compareTo(Player other){
     	if(turn < other.getTurn())
@@ -97,6 +80,17 @@ public class Player implements Comparable<Player>
     		occupiedTerritories.put(terr,1);
     	
     }
+    
+    public void removeUnit(Unit failurer) {
+        /* Not even needed for now.
+        String terr = failurer.getTerritory().getName();
+        if (occupiedTerritories.containsKey(terr)) {
+            int id = failurer.getID();
+            occupiedTerritories.remove(id);
+        } else
+            System.out.println("No units here.");*/
+    }
+    
     public TreeMap<Integer,Unit> getArmy()
     {
     	return army;
@@ -111,61 +105,32 @@ public class Player implements Comparable<Player>
     }
     
     //cleans up army and occupiedTerritories (gets rid of destroyed units and shifts occupiedTerritories as units move
-
-    public void removeDeadUnit(Unit unit)
+    public void update()
     {
-    	ArrayList<String> terrToBeRemoved = new ArrayList<String>();
-    	if(unit.getHealth() < 0)
-    	{
-    		army.remove(unit.getID());
-    		String territory = unit.getTerritory().getName();
-    		
-    		int currentUnitAmount = occupiedTerritories.get(territory);
-    	 	if(currentUnitAmount-1 <= 0)
-	    	{
-	    		System.out.println("Removing Territory from occupiedTerritories due to unit death.");
-	    		terrToBeRemoved.add(territory);
-	    	}
-    	 	else
-    	 		occupiedTerritories.put(territory,currentUnitAmount-1);
-    		
-    	}
-    	for(String a:terrToBeRemoved)
-    		occupiedTerritories.remove(a);
+    	removeDeadUnits();
+    }
+    public void update(Unit unit)
+    {
+    	removeDeadUnits();
+    	updateTerritories(unit);
     }
     public void removeDeadUnits()
     {
-    	ArrayList<String> terrToBeRemoved = new ArrayList<String>();
-    	ArrayList<Integer> unitToBeRemoved = new ArrayList<Integer>();
-    	for(int id:army.keySet())
+    	ArrayList<Integer> toBeRemoved = new ArrayList<Integer>();
+    	for(int id: army.keySet())
     	{
-    		Unit unit = army.get(id);
-    		if(unit.getHealth() < 0)
+    		if(army.get(id).getHealth() <= 0)
     		{
-    			System.out.println("This unit is DEAD!");
-    			unitToBeRemoved.add(id);
-    			String territory = unit.getTerritory().getName();
-    		
-    			int currentUnitAmount = occupiedTerritories.get(territory);
-    			if(currentUnitAmount-1 <= 0)
-    			{
-    				System.out.println("Removing Territory from occupiedTerritories due to unit death.");
-    				terrToBeRemoved.add(territory);
-    			}
-    			else
-    				occupiedTerritories.put(territory,currentUnitAmount-1);
+    			int currentUnitAmount = occupiedTerritories.get(army.get(id).getTerritory().getName());
+    	    	occupiedTerritories.put(army.get(id).getTerritory().getName(),currentUnitAmount-1);
+    	    	toBeRemoved.add(id);
     		}
-    	
     	}
-    	for(String a:terrToBeRemoved)
-    		occupiedTerritories.remove(a);
-    	for(Integer a:unitToBeRemoved)
-    		army.remove(a);
+    	for(int id: toBeRemoved)
+    	{
+    		army.remove(id);
+    	}
     }
-    //updateTerritories for MOVING, not as a result of being destroyed
-    //this is because destroyed units do not move when they are destroyed, and updateTerritories tries
-    //to clear out the last location of the unit. Since the destroyed unit didn't move, it will try to
-    //clear away a location that is no longer in occupiedTerritories.
     public void updateTerritories(Unit unit)
     {
     	String previousTerritory = "";
@@ -173,23 +138,19 @@ public class Player implements Comparable<Player>
     		previousTerritory = unit.getPreviouslyOccupied().getName();
     	String currentTerritory = unit.getTerritory().getName();
     	ArrayList<String> toBeRemoved = new ArrayList<String>();
-
-    	System.out.println(previousTerritory);
-    	if(!previousTerritory.equals("") && occupiedTerritories.containsKey(previousTerritory))
+    	
+    	if(!previousTerritory.equals(""))
     	{
     		int currentUnitAmount = occupiedTerritories.get(previousTerritory);
 	    	if(currentUnitAmount-1 <= 0)
 	    	{
-	    		System.out.println("Bad???");
 	    		toBeRemoved.add(previousTerritory);
 	    	}
 	    	else
 	    		occupiedTerritories.put(previousTerritory,currentUnitAmount-1);
     	}
-    	
     	for(String a: toBeRemoved)
     	{
-    		System.out.println("Waaaghh!");
     		occupiedTerritories.remove(a);
     	}
    
@@ -206,20 +167,8 @@ public class Player implements Comparable<Player>
     public void loses()
     {
     	hasLost = true;
-    	for(int id: army.keySet())
-    		army.get(id).takeDamage(100000);
-    	
-    }
-    public boolean hasLost()
-    {
-    	return hasLost;
-    }
-    public void resetArmy()
-    {
-    	for(int id:army.keySet())
-    	{
-    		army.get(id).resetForTurn();
-    	}
+    	army = new TreeMap<Integer,Unit>();
+    	occupiedTerritories = new TreeMap<String,Integer>();
     }
     public String toString() {	
     	return name +" from "+country+" has an army with " +army.size()+" units in it and goes on turn "+turn+"\n\n";

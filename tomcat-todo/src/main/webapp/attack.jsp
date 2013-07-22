@@ -21,7 +21,9 @@ ArrayList<Player> players = (ArrayList<Player>) request.getAttribute("players");
 Territory[][] map = (Territory[][]) request.getAttribute("map"); 
 Player currPlayer = (Player) request.getAttribute("currplayer");
 Collections.sort(players);
-Integer badSpawn = (Integer)request.getAttribute("badSpawn");%>
+Integer badSpawn = (Integer)request.getAttribute("badSpawn");
+int[] attackResult = (int[])request.getAttribute("attackResult");
+Player dPlayer = (Player)request.getAttribute("defendingPlayer");%>
 
 
 
@@ -44,17 +46,43 @@ for(String key: terr.keySet()) {%>
 </select>
 
 <font face="courier">
-<%if (badSpawn.compareTo(1) == 0) { %>
-It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to spawn a new Unit! Your last choice was an invalid position!</span>
-<%} else {%>
-It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to spawn a new Unit!</span>
-<%}%>
+<%if (badSpawn.compareTo(1) == 0){%>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack! Invalid AttackFrom or TargetCoordinates coordinates!</span>
+<%} else if (badSpawn.compareTo(2) == 0) {%>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack! Invalid Armies To Move coordinates!</span>
+<%} else if (badSpawn.compareTo(3) == 0) {%>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack! Invalid Die Count!</span>
+<% } else if (badSpawn.compareTo(4) == 0) { %>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack! Territory occupied without a fight!</span>
+<% } else if (badSpawn.compareTo(5) == 0) { %>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack! You called an attack! The results are below:</span><br>
+<span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s armies lost: <%=attackResult[0]%></span><br>
+<span style="color<%=colorCode(dPlayer)%>"><%=dPlayer.getName()%>'s armies lost: <%=attackResult[1]%></span><br>
+    <%if (attackResult[2] == 1) {%>
+    <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%> has taken the territory!</span>
+    <%} else {%>
+    It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack!</span>
+    <%}%>
+<%} else if (badSpawn.compareTo(0) == 0) {%>
+It's <span style="color<%=colorCode(currPlayer)%>"><%=currPlayer.getName()%>'s turn to attack!</span>
+<% }%>
 <form action = "update" method="POST">
-<input type="hidden" name = "operation" value = "SPAWN"/>
-Coord1<input type="text" name="Coord1"/><br>
-Coord2<input type="text" name="Coord2"/><br>
+<input type="hidden" name = "operation" value = "ATTACK" />
+AttackFromCoord1<input type="text" name="AttackFromCoord1" /><br>
+AttackFromCoord2<input type="text" name="AttackFromCoord2" /><br>
+TargetCoord1<input type="text" name="TargetCoord1" /><br>
+TargetCoord2<input type="text" name="TargetCoord2" /><br>
+Occupy with <input type="text" name="ArmiesToMove" /> armies if you destroy the foe!<br>
+Attack Dice<input type="text" name="AttackDice" /><br>
+Defend Dice<input type="text" name="DefendDice" /><br>
+<input type="submit" value="Attack!" />
 
-<input type="submit" value="Spawn another Unit!" />
+</form>
+<form action="update" method="POST">
+<input type="hidden" name="operation" value = "FINISH_TURN">
+<input type="submit" value="Finish Turn" />
+</form>
+
 </form>
 
 

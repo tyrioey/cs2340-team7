@@ -12,10 +12,11 @@ import java.util.*;
 
 
 public class RiskGame {
-
+ Random rand;
+ 
  private int gameID;
  
- public static final int ADD_PLAYERS = 0, CONFIRMATION = 1, SPAWN_LOCATION = 2, MOVE_ATTACK = 3; 
+ public static final int ADD_PLAYERS = 0, CONFIRMATION = 1, SELECT_LOCATION = 2;
  private int state; // 0-add players, 1-select territory, 
  
  ArrayList<Player> players;
@@ -29,6 +30,7 @@ public class RiskGame {
      this.players = new ArrayList<Player>();
      this.playerTurn = 0;
      map = new Territory[0][0];
+     rand = new Random();
  }
  
  // general functionality
@@ -117,7 +119,10 @@ public class RiskGame {
      if (state == ADD_PLAYERS) {
          if (players.size() >= 3) {
              System.out.println("Moving on to Confirmation!");
+             // calculate army numbers and turn order
              calcArmiesAndTurnOrder();
+             
+             // set the game state to confirmation
              state = CONFIRMATION;
          } else {
              result = "Not enough players.";
@@ -146,119 +151,146 @@ public class RiskGame {
  public String finishConfirmation() {
      String result = null;
      if (state == CONFIRMATION) {
-         state = SPAWN_LOCATION;// next state goes here.
+         state = 2;// next state goes here.
      } else {
          result = "State ERROR: Not CONFIRMATION.";
      }
      playerTurn = 0;
      return result;
  }
- public void bombard(ArrayList<Unit> attackers, Territory homebase)
- {Random rand = new Random();
-		int numAttackDice = (int) Math.floor(1+attackers.size()/4);
-		System.out.println(attackers);
-		Player victim = homebase.getPlayer();
-
-		for(Unit attacker: attackers)
-		{
-
-			int damage = attacker.getStrength();
-			String diceRolls = "";
-			for(int a = 0; a<numAttackDice;a++)
-			{	
-				int roll = rand.nextInt(6)+1;
-				damage+=roll;
-				diceRolls+=roll+", ";
-			}
-			diceRolls = diceRolls.substring(0,diceRolls.length()-2);
-			
-			System.out.println(attacker.getName() +"-"+attacker.getID()+"- is attacking "+victim.getName()+"'s homebase!");
-			System.out.println(attacker.getName() +"-"+attacker.getID()+"- rolled "+numAttackDice+" dice ("+diceRolls+") plus its strength ("+attacker.getStrength()+") for "+damage+" damage!");
-		
-			homebase.takeDamage(damage);
-			
-		}
-		if(victim.hasLost())
-		{
-			for(Territory[] a: map)
-				for(Territory b: a)
-					b.removeDeadUnits();
-			for(int a = 0; a<players.size()-2)
-				nextTurn();
-			System.out.println(victim.getName()+" has lost!!!");
-			for(int a = 0; a<players.size();a++)
-			{
-				if(players.get(a).getName().equals(victim.getName()))
-				{	players.remove(a);
-					break;
-				}
-			}
-		}
-		if(players.size() == 1)
-			state = ADD_PLAYERS;
-		
- }
  
+ 
+ // I'm not using this - Brian B
 public void fight(ArrayList<Unit> attackers, ArrayList<Unit> defenders)
 {
-
-		Random rand = new Random();
-		int numAttackDice = (int) Math.floor(1+attackers.size()/4);
-		int numDefenseDice = (int) Math.floor(1+defenders.size()/4);
-				
-		int counterAttackDice = rand.nextInt(6)+1;
-		
-		System.out.println(attackers);
-		System.out.println(defenders);
+	int numAttackDice = (int)Math.floor(1.0+attackers.size()/4.0);
+	int numDefenseDice = (int)Math.floor(1.0+defenders.size()/4.0);
 	
-		for(Unit attacker: attackers)
-		{
-
-			int damage = attacker.getStrength();
-			String diceRolls = "";
-			for(int a = 0; a<numAttackDice;a++)
-			{	
-				int roll = rand.nextInt(6)+1;
-				damage+=roll;
-				diceRolls+=roll+", ";
-			}
-			diceRolls = diceRolls.substring(0,diceRolls.length()-2);
-			Collections.shuffle(defenders);
-			
-			Unit victim = defenders.get(0);
-			if(victim != null)
-			{
-			System.out.println(attacker.getName() +"-"+attacker.getID()+"- is attacking "+victim.getName()+"-"+victim.getID());
-			System.out.println(attacker.getName() +"-"+attacker.getID()+"- rolled "+numAttackDice+" dice ("+diceRolls+") plus its strength ("+attacker.getStrength()+") for "+damage+" damage!");
-			int defense = victim.getDefense();
-			diceRolls = "";
-			for(int a = 0;a<numDefenseDice;a++)
-			{
-				int roll = rand.nextInt(6)+1;
-				defense+=roll;	
-				diceRolls +=roll+", ";
-			}
-			diceRolls=diceRolls.substring(0,diceRolls.length()-2);
-			System.out.println(victim.getName() +"-"+victim.getID()+"- rolled "+numDefenseDice+" dice ("+diceRolls+") plus its defense ("+victim.getDefense()+") to prevent "+defense+" damage!");
-			damage -= defense;
-			
-			if(damage < 0)
-				damage = 0;
-			victim.takeDamage(damage);
-			attacker.setAttacked(true);
-			System.out.println(victim.getName() + "-"+victim.getID()+" was attacked for "+damage+" down to "+victim.getHealth()+"/"+victim.getMaxHealth()+"!");
-			
-			}
+	int counterAttackDice = rand.nextInt(6)+1;
 	
+	for(Unit attacker: attackers)
+	{
+
+		int damage = attacker.getStrength();
+		String diceRolls = "";
+		for(int a = 0; a<numAttackDice;a++)
+		{	
+			damage+=rand.nextInt(6)+1;
+			diceRolls+=damage+" ";
 		}
-		for(Player player:players)
-			player.removeDeadUnits();
-		for(Territory[] a: map)
-			for(Territory b: a)
-				b.removeDeadUnits();
-	
+		
+		Collections.shuffle(defenders);
+		Unit victim = defenders.get(0);
+		System.out.println(attacker.getName() +"-"+attacker.getID()+" - is attacking "+victim.getName());
+		System.out.println(attacker.getName() +"-"+attacker.getID()+" - rolled "+diceRolls+" for damage!");
+		int defense = victim.getDefense();
+		for(int a = 0;a<numDefenseDice;a++)
+			defense+=rand.nextInt(6)+1;
+		damage -= defense;
+		
+		victim.takeDamage(damage);
+		System.out.println(victim + " was attacked for "+damage+" down to "+victim.getHealth()+"/"+victim.getMaxHealth() );
+	}
 }
- 
+
+// using this instead, for now - Brian B
+public int[] attackTerritory(int[] from, int[] to, int aDice, int dDice, int occupyCount) {
+    int ax = from[0];
+    int ay = from[1];
+    int dx = to[0];
+    int dy = to[1];
+    Territory fromT = map[ax][ay];
+    Territory toT = map[dx][dy];
+    ArrayList<Unit> attackers = treemapToArrayList(fromT.getOccupants());
+    ArrayList<Unit> defenders = treemapToArrayList(toT.getOccupants());
+    // redundant size checks might be a good idea (don't do for now)
+    ArrayList<Integer> attackDiceResults = new ArrayList<Integer>();
+    ArrayList<Integer> defendDiceResults = new ArrayList<Integer>();
+    for (int i = 0; i < aDice; i++) {
+        attackDiceResults.add(rand.nextInt(6)+1);
+    }
+    for (int i = 0; i < dDice; i++) {
+        defendDiceResults.add(rand.nextInt(6)+1);
+    }
+    // sort results
+    Collections.sort(attackDiceResults);
+    Collections.reverse(attackDiceResults);
+    Collections.sort(defendDiceResults);
+    Collections.reverse(defendDiceResults);
+    // compare results, and tally death toll
+    int attackersKilled = 0;
+    int defendersKilled = 0;
+    for (int i = 0; i < dDice; i++) {
+        if (attackDiceResults.get(i) <= defendDiceResults.get(i)) {
+            attackersKilled += 1;
+        } else {
+            defendersKilled += 1;
+        }
+    }
+    // graveyard
+    ArrayList<Unit> attackerGraves = new ArrayList<Unit>();
+    ArrayList<Unit> defenderGraves = new ArrayList<Unit>();
+    for (int i = 0; i < attackersKilled; i++) {
+        Unit fallenSoldier = attackers.get(0);
+        Player aPlayer = fallenSoldier.getOwner();
+        //aPlayer.removeUnit(fallenSoldier);
+        attackerGraves.add(fallenSoldier);
+        fromT.removeUnit(fallenSoldier);
+        attackers.remove(0);
+    }
+    for (int i = 0; i < defendersKilled; i++) {
+        Unit fallenSoldier = defenders.get(0);
+        Player aPlayer = fallenSoldier.getOwner();
+        //aPlayer.removeUnit(fallenSoldier);
+        defenderGraves.add(fallenSoldier);
+        toT.removeUnit(fallenSoldier);
+        defenders.remove(0);
+    }
+    int territoryOccupied = 0;
+    if (defenders.size() == 0) {
+        System.out.println("The defenses have been overrun!");
+        territoryOccupied = 1;
+        // attacker might not have enough armies.
+        if (attackers.size() - occupyCount < 1)
+            occupyCount = attackers.size()-1;
+        occupyTerritory(from, to, occupyCount);
+    }
+    
+    // attackers killed, defenders killed, territory occupied
+    int[] battleResults = {attackersKilled, defendersKilled, territoryOccupied};
+    return battleResults;
+}
+
+// can also be used for fortification
+public void occupyTerritory(int[] from, int[] to, int occupyCount) {
+    if (occupyCount > 0) {
+        int ax = from[0];
+        int ay = from[1];
+        int dx = to[0];
+        int dy = to[1];
+        Territory fromT = map[ax][ay];
+        Territory toT = map[dx][dy];
+        ArrayList<Unit> armiesFrom = treemapToArrayList(fromT.getOccupants());
+        //ArrayList<Unit> armiesTo = treemapToArrayList(toT.getOccupants());
+        // redundant size check
+        System.out.println("occupy territory, armiesFrom.size(): "+armiesFrom.size()+"\noccupyCount: "+occupyCount);
+        if (armiesFrom.size() > occupyCount) {
+            //remove from old territory, and add to new.
+            for (int i = 0; i < occupyCount; i++) {
+                Unit mover = armiesFrom.get(0);
+                System.out.println("a mover has been moved to the new location."+mover.getID());
+                //Player aPlayer = fallenSoldier.getOwner();
+                //aPlayer.removeUnit(fallenSoldier);
+                toT.addUnit(mover);
+                fromT.removeUnit(mover);
+                armiesFrom.remove(0);
+            }
+        } else {
+            System.out.println("Not enough armiesFrom to occupy!");
+        }
+    }
+}
+
  public Territory[][] initializeBoard()
  {
  	map = new Territory[9][15];
@@ -336,25 +368,32 @@ public void fight(ArrayList<Unit> attackers, ArrayList<Unit> defenders)
  }
  public int spawn(Territory[][] maps, Unit unit, int amount, int[] coords,int idn) 
  {
-	if(state == SPAWN_LOCATION)
-	{
-		for(int i = 0; i < coords.length; i+=2)
-		{
-			for(int a = 1; a <= amount; a++)
-			{
-				Unit toBeAdded = new Unit(unit.getName(),unit.getHealth(),unit.getStrength(),unit.getDefense(),unit.getOwner());
-				toBeAdded.setID(idn++);
-				toBeAdded.setTerritory(maps[coords[i]][coords[i+1]]);
-				toBeAdded.getOwner().addUnit(toBeAdded);
-				maps[coords[i]][coords[i+1]].addUnit(toBeAdded);
-			}
-			System.out.println("Spawning "+amount+" "+unit.getName()+"(s) at ["+coords[i]+","+coords[i+1]+"] for "+players.get(getCurrTurn()).getName());
 	
+	for(int i = 0; i < coords.length; i+=2)
+	{
+		for(int a = 1; a <= amount; a++)
+		{
+		Unit toBeAdded = new Unit(unit.getName(),unit.getHealth(),unit.getStrength(),unit.getDefense(),unit.getOwner());
+		toBeAdded.setID(idn++);
+		toBeAdded.setTerritory(maps[coords[i]][coords[i+1]]);
+		toBeAdded.getOwner().addUnit(toBeAdded);
+		maps[coords[i]][coords[i+1]].addUnit(toBeAdded);
 		}
-	}
+		System.out.println("Spawning "+amount+" "+unit.getName()+"(s) at ["+coords[i]+","+coords[i+1]+"] for "+players.get(getCurrTurn()).getName());
+	
+ 	}
 	return idn;
  }
  
+ 
+private ArrayList<Unit> treemapToArrayList(TreeMap<Integer, Unit> treemap) {
+    ArrayList<Integer> keyList = new ArrayList<Integer>(treemap.keySet());
+    ArrayList<Unit> unitsArray = new ArrayList<Unit>();
+    for (int i = 0; i < keyList.size(); i++) {
+        unitsArray.add(treemap.get(keyList.get(i)));
+    }
+    return unitsArray;
+}
  
  
  

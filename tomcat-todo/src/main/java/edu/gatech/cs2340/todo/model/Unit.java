@@ -6,6 +6,7 @@ import java.util.*;
 
 public class Unit
 {
+    static int idCounter = 0; // each unit has a unique id
 	String name;
 	int id; 
 	int health;
@@ -17,13 +18,12 @@ public class Unit
 	Territory previouslyOccupied;
 	Territory occupying;
 	Random rand = new Random();
-	boolean attacked;
-	boolean moved;
 	
 	public  Unit(String name, int health, int strength, int defense)
 	{
 		this.name = name;
-		id = 0;
+		id = idCounter;
+        idCounter += 1;
 		this.health = maxHealth = health;
 		this.strength=strength;
 		this.defense = defense;
@@ -31,9 +31,6 @@ public class Unit
 		owner = null;
 		previouslyOccupied = null;
 		occupying = null;
-		attacked = false;
-		moved = false;
-		
 		
 	}
 	public  Unit(String name, int health, int strength, int defense, Player owner)
@@ -47,8 +44,6 @@ public class Unit
 		this.owner = owner;
 		previouslyOccupied = null;
 		occupying = null;
-		attacked = false;
-		moved = false;
 		
 	}
 	public String getName()
@@ -96,17 +91,12 @@ public class Unit
 	{
 		previouslyOccupied = occupying;
 		occupying = location;
-
 	}
-	public void move(Territory location)
+	public void move(Territory newLocation)
 	{
-		setTerritory(location);
-		owner.updateTerritories(this);
-		moved = true;
-		previouslyOccupied.update(this);
-		occupying.addUnit(this);
+		setTerritory(newLocation);
+		owner.update(this);
 	}
-
 	public Territory getTerritory()
 	{
 		return occupying;
@@ -115,26 +105,36 @@ public class Unit
 	{
 		return previouslyOccupied;
 	}
-	public void setAttacked(boolean attack)
-	{
-		attacked = attack;
+	public int[] attack(Unit enemy)
+	{	
+//		currently only 1 die roll per modifier. Maybe more alongside future implmentations ie. flanking attack bonus/certain items, etc.
+		int attackDice = rand.nextInt(6)+1;
+		int enemyDefenseDice = rand.nextInt(6)+1;
+		int enemyAttackDice = rand.nextInt(6)+1;
+		int defenseDice = rand.nextInt(6)+1;
+		int counterAttackDice = rand.nextInt(6)+1;
+		
+		int damage = attackDice*strength-enemyDefenseDice*enemy.getDefense();
+		enemy.takeDamage(damage);
+		
+		int enemyDamage = enemyAttackDice*enemy.getStrength()-defenseDice*defense;
+		enemyDamage = counterAttackDice/6*enemyDamage; //counterattack damage reduced by a factor of die roll
+		takeDamage(enemyDamage);
+		
+		int[] dice = {attackDice,enemyDefenseDice,enemyAttackDice,defenseDice,counterAttackDice,damage,enemyDamage};
+		return dice;
 	}
-	public boolean getAttacked(){
-		return attacked;
-	}
-	
-	public boolean getMoved(){
-		return moved;
-	}	
-	public void resetForTurn()
+	public Unit clone()
 	{
-		attacked = moved = false;
+		Unit a = new Unit(this.getName(),this.getMaxHealth(),this.getStrength(),this.getDefense());
+		a.setTerritory(occupying);
+		a.setOwner(owner);
+		return a;
 	}
 	public String toString()
 	{
-		return name+"-"+getID()+" has "+health+"/"+maxHealth+" health, is at "+occupying+
-				"     has moved - "+moved+"     has attacked - "+attacked;
-
+		return name+" with identification number "+getID()+" currently has "+health+"/"+maxHealth+" hit points, is located at "+occupying+
+				" and is owned by "+owner.getName();
 	}
 
 }
