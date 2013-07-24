@@ -1,0 +1,24 @@
+import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Territory[][] map = new Territory[5][5];
+		
+		RiskGame game = new RiskGame(1);
+		
+		game.addPlayer("Eric","Earth");
+		System.out.println(game.getPlayers());
+		game.addPlayer("Erica","Eartha");
+		System.out.println(game.getPlayers());
+		game.addPlayer("Eric","Earth");
+		System.out.println(game.getPlayers());
+	
+	
+
+	}
+
+}

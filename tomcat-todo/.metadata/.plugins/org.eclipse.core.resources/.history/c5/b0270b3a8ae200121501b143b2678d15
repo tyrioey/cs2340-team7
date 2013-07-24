@@ -1,0 +1,20 @@
+//import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Unit zergling = new Unit("Zergling",35,5,0,eric);
+		for(int a=0;a<5;a++)
+			{
+			zergling.setID(a);
+			eric.addUnit(zergling);
+			}
+		System.out.println(eric.getArmy());
+		System.out.println("wtf");
+
+	}
+
+}

@@ -1,0 +1,63 @@
+import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Territory[][] map = new Territory[5][5];
+		
+		for(int a = 0;a<map.length;a++)
+		{
+			for(int b = 0; b< map.length;b++)
+			{
+				int[] co = {a,b};
+				map[a][b] = new Territory("["+a+","+b+"]",co);
+			}
+		}
+		
+		for(int a=0;a<5;a++)
+		{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[a][a]);
+			eric.addUnit(zergling);
+		}
+		TreeMap<Territory,Integer> terr = new TreeMap<Territory,Integer>();
+		int [] aco = {1,1};
+		int[] bco = {2,2};
+		int[] cco = {1,1};
+		
+		Territory a = eric.getArmy().get(1).getTerritory();
+		Territory b = eric.getArmy().get(0).getTerritory();
+		
+		System.out.println(a.equals(b));
+		terr.put(a, 1);
+		System.out.println(terr.containsKey(a));
+		System.out.println(terr.keySet().contains(b));
+		System.out.println(terr);
+		System.out.println(terr.get(a));
+		
+/*		for(int id:eric.getArmy().keySet())
+			System.out.println(id+" = "+eric.getArmy().get(id));
+		System.out.println(eric.getOccupiedTerritories());
+		Unit zergling = new Unit("Zergling",35,5,0,eric);
+		zergling.setID(5);
+		zergling.setTerritory(map[3][3]);
+		eric.addUnit(zergling);
+		zergling = new Unit("Zergling",35,5,0,eric);
+		zergling.setID(6);
+		zergling.setTerritory(map[3][2]);
+		eric.addUnit(zergling);
+		eric.addUnit(zergling);
+		System.out.println(eric.getOccupiedTerritories());
+		for(Territory a: eric.getOccupiedTerritories().keySet())
+			System.out.println(a);*/
+		
+	
+	
+
+	}
+
+}

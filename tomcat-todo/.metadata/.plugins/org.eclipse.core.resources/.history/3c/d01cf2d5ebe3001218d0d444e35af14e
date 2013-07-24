@@ -1,0 +1,49 @@
+import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Territory[][] map = new Territory[5][5];
+		
+		for(int a = 0;a<map.length;a++)
+		{
+			for(int b = 0; b< map.length;b++)
+			{
+				int[] co = {a,b};
+				map[a][b] = new Territory("["+a+","+b+"]",co);
+			}
+		}
+		
+		for(int a=0;a<5;a++)
+		{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[a][a]);
+			eric.addUnit(zergling);
+		}
+		for(int a=0;a<5;a++)
+		{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[4-a][a]);
+			eric.addUnit(zergling);
+		}
+		for(int a=0;a<5;a++)
+		{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[2][2]);
+			eric.addUnit(zergling);
+		}
+		System.out.println(eric.getOccupiedTerritories());
+		
+		
+	
+	
+
+	}
+
+}

@@ -1,0 +1,119 @@
+
+// RiskGame
+
+import java.util.*;
+
+
+public class RiskGame {
+
+    private int gameID;
+    
+    public static final int ADD_PLAYERS = 0, CONFIRMATION = 1, SELECT_LOCATION = 2;
+    private int state; // 0-add players, 1-select territory, 
+    
+    ArrayList<Player> players;
+    int playerTurn;
+    
+    public RiskGame(int gameID) {
+        this.gameID = gameID;
+        this.state = ADD_PLAYERS;
+        this.players = new ArrayList<Player>();
+        this.playerTurn = 0;
+    }
+    
+    // general functionality
+    public int getGameID() {
+        return gameID;
+    }
+    
+    public int getGameState() {
+        return state;
+    }
+    
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+    
+
+    /**
+      * add players state functions
+      *
+      * @return null for success, or a string with an error message to be 
+      * displayed to the player.
+      */
+    public String addPlayer(String name, String country) {
+        String result = null;
+        if (state == ADD_PLAYERS) {
+            if (players.size() < 6) {
+                System.out.println("We're adding a player!");
+                // make sure not a duplicate
+                if (!duplicateCountry(country)) {
+                    players.add(new Player(name, country));
+                } else {
+                    result = "Players cannot choose the same country!";
+                }
+            } else {
+                result = "Too many players";
+            }
+        }
+        return result;
+    }
+    
+    // checks if the new player has chosen the same country as another.
+    private boolean duplicateCountry(String country) {
+        boolean result = false;
+        for (int i = 0; i < players.size(); i++) {
+            if (country.equalsIgnoreCase(players.get(i).getCountry())) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+    
+    public String finishAddingPlayers() {
+        String result = null;
+        if (state == ADD_PLAYERS) {
+            if (players.size() >= 4) {
+                System.out.println("Moving on to Confirmation!");
+                // calculate army numbers and turn order
+                calcArmiesAndTurnOrder();
+                
+                // set the game state to confirmation
+                state = CONFIRMATION;
+            } else {
+                result = "Not enough players.";
+            }
+        } else {
+            result = "State ERROR: Not adding players.";
+        }
+        return result;
+    }
+    
+    private void calcArmiesAndTurnOrder() {
+        // player armies
+//        int armies = 35-((players.size()-3)*5);
+//        for (int i = 0; i < players.size(); i++) {
+//            players.get(i).setArmySize(armies);
+//        }
+//        // player ordering
+//        Collections.shuffle(players);
+    }
+    
+    // confirmation state functions
+    public String finishConfirmation() {
+        String result = null;
+        if (state == CONFIRMATION) {
+            state = 2;// next state goes here.
+        } else {
+            result = "State ERROR: Not CONFIRMATION.";
+        }
+        return result;
+    }
+    public String toString()
+    {
+    	return "This is game id: "+gameID+" at state "+state;
+    }
+    
+    // 
+}

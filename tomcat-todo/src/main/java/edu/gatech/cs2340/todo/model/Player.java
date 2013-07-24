@@ -211,7 +211,6 @@ public class Player implements Comparable<Player>{
     	hasLost = true;
     	for(int id: army.keySet())
     		army.get(id).takeDamage(100000);
-    	occupiedTerritories = new TreeMap<String,Integer>();
     }
     public boolean hasLost(){
     	return hasLost;

@@ -1,6 +1,19 @@
+.id
+{
+position:absolute 
+top:350px;
+left;650px;
+}
+
 .first
 {
    text-align:center;
+}
+.cred
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 body 
 {

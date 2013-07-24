@@ -1,0 +1,32 @@
+//import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Territory[][] map = new Territory[5][5];
+		
+		for(Territory[] a: map){
+			for(Territory b: a){
+				System.out.println(b);
+			}
+		System.out.println("~~");
+		}
+		
+		for(int a=0;a<5;a++)
+			{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[a][a]);
+			eric.addUnit(zergling);
+			}
+		
+		for(int id:eric.getArmy().keySet())
+			System.out.println(id+" = "+eric.getArmy().get(id));
+	
+
+	}
+
+}

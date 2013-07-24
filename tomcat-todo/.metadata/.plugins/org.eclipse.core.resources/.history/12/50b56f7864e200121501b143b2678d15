@@ -1,0 +1,28 @@
+import java.util.*;
+public class Runner {
+
+	public static void main(String[] args) 
+	{
+		Player bob = new Player("Bob","Earth");
+//		System.out.println(bob);
+		
+		int[] aco = {1,1};
+		int[] bco = {2,2};
+		int[] cco = {1,1};
+		
+		Territory a = new Territory("A",aco);
+		Territory b = new Territory("B",bco);
+		Territory c = new Territory("C",cco);
+		
+		
+		System.out.println(a.equals(b));
+		System.out.println(a.equals(c));
+		
+		ArrayList<Territory> terr = new ArrayList<Territory>();
+		terr.add(a); terr.add(b); terr.add(c);
+		
+		if(terr.contains(new Territory("A",aco))
+			System.out.println("YES!");
+	}
+
+}

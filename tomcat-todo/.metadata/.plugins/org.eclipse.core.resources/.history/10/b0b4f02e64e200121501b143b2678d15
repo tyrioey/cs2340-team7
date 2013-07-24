@@ -1,0 +1,18 @@
+
+public class Runner {
+
+	public static void main(String[] args) 
+	{
+		Player bob = new Player("Bob","Earth");
+		System.out.println(bob);
+		
+		int[] aco = {1,1};
+		int[] bc0 = {2,2};
+		int[] cco = {1,1};
+		
+		Territory a = new Territory("A",aco);
+		Territory b = new Territory("B",bco);
+		Territory c = new Territory("C",cco);
+	}
+
+}

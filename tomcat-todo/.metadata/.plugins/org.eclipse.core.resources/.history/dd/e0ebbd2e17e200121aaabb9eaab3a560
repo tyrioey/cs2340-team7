@@ -1,0 +1,13 @@
+package java.edu.gatech.cs2340.todo.model;
+
+class Test {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

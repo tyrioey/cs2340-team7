@@ -1,0 +1,42 @@
+import java.util.*;
+import java.lang.System;
+
+public class Test {
+
+	public static void main(String[] args) 
+	{
+		Player eric = new Player("Eric","Earth");
+		Territory[][] map = new Territory[5][5];
+		
+		for(int a = 0;a<map.length;a++)
+		{
+			for(int b = 0; b< map.length;b++)
+			{
+				int[] co = {a,b};
+				map[a][b] = new Territory("["+a+","+b+"]",co);
+			}
+		}
+		
+		for(int a=0;a<5;a++)
+		{
+			Unit zergling = new Unit("Zergling",35,5,0,eric);
+			zergling.setID(a);
+			zergling.setTerritory(map[a][a]);
+			eric.addUnit(zergling);
+		}
+		TreeMap<String,Integer> terr = new TreeMap<String,Integer>();
+		String a = "A";
+		String b = "B";
+		String c = "A";
+		terr.put(a,1);
+		terr.put(b,2);
+		terr.put(c, 4);
+		System.out.println(terr);
+		
+		
+	
+	
+
+	}
+
+}

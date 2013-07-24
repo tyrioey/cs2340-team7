@@ -1,0 +1,13 @@
+
+import java.lang.System;
+import java.util.*;
+public class Tests {
+
+	public static void main(String[] args) {
+		Random dice = new Random();
+		double rand = dice.nextInt(4);
+		System.out.println(rand*6);
+
+	}
+
+}

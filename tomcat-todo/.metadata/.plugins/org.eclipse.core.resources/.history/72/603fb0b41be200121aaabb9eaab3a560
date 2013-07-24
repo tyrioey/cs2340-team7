@@ -1,0 +1,12 @@
+package java.edu.gatech.cs2340.todo.model;
+
+public class Test 
+{
+	public static void main(String[] args) 
+	{
+		Unit g = new Unit("Zergling",35,5,0,null);
+		
+		System.out.println(g);
+
+	}
+}

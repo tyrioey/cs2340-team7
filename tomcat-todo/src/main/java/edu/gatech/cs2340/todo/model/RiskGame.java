@@ -304,8 +304,7 @@ public void bombard(ArrayList<Unit> attackers, Territory homebase){
 			for(Territory[] a: map)
 				for(Territory b: a)
 					b.removeDeadUnits();
-			for(Player player:players)
-				player.removeDeadUnits();
+
 
 			System.out.println(victim.getName()+" has lost!!!");
 	/*		for(int a = 0; a<players.size();a++){
@@ -319,8 +318,7 @@ public void bombard(ArrayList<Unit> attackers, Territory homebase){
 /*			for(int a = 0; a<players.size()-1;a++)
 				nextTurn();*/
 		}	
-		if(players.size() == 1)
-			state = ADD_PLAYERS;
+
 }
 
 public void fight(ArrayList<Unit> attackers, ArrayList<Unit> defenders){

@@ -154,11 +154,15 @@ public class Territory implements Comparable<Territory>{
     	if(!equals(unit.getTerritory().getCoords()) || unit.getHealth() < 0)
     		occupiedByUnit.remove(unit.getID());
     	if(occupiedByUnit.size() == 0)
+    	{
     		isOccupied = false;
-
+    		occupiedByPlayer = null;
+    		occupiable = true;
+    	}
 	}
 	 public void removeDeadUnits()
 	    {
+		 if(!homeBase){
 			ArrayList<Integer> toBeRemoved = new ArrayList<Integer>();
 		     for(int id : occupiedByUnit.keySet())		     {
 		    	 Unit unit = occupiedByUnit.get(id);
@@ -167,8 +171,14 @@ public class Territory implements Comparable<Territory>{
 		     }
 		     for(int id:toBeRemoved)
 		    	 occupiedByUnit.remove(id);
+		     
 		     if(occupiedByUnit.size() == 0)
-		    	 isOccupied = false;
+		     { 
+		    	isOccupied = false;
+		     	occupiedByPlayer = null;
+	    		occupiable = true;
+		     }
+	    }
 	    }
 	public String toString()
 	{

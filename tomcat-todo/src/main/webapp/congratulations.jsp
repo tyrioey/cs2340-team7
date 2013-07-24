@@ -12,5 +12,5 @@ Congratulations <%=winner%> of <%=country %>! You are the Champion of the Stars!
 </font>
 
 <form = "index.html">
-<input type ="Submit" value ="Play another game?">
+<input type ="Submit" value ="Play again?">
 </form>
