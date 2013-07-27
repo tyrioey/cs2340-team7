@@ -1,9 +1,0 @@
-INDEX VERSION 1.126
-C:\Users\Eric\cs2340-team7\tomcat-todo\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3210010581.index
-\Risk\main
-C:\Users\Eric\cs2340-team7\tomcat-todo\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\449242500.index
-\todo\main
-C:\Users\Eric\cs2340-team7\tomcat-todo\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3143726927.index
-\RandomTests\java
-C:\Users\Eric\cs2340-team7\tomcat-todo\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3417685541.index
-\RandomTests\java
